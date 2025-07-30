@@ -3,6 +3,7 @@ package com.henningstorck.kptncookdb.recipes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.henningstorck.kptncookdb.images.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -21,9 +22,11 @@ public class RecipeService {
 
 	private final Logger logger = LoggerFactory.getLogger(RecipeService.class);
 	private final RecipeRepository recipeRepository;
+	private final ImageService imageService;
 
-	public RecipeService(RecipeRepository recipeRepository) {
+	public RecipeService(RecipeRepository recipeRepository, ImageService imageService) {
 		this.recipeRepository = recipeRepository;
+		this.imageService = imageService;
 	}
 
 	public List<Recipe> listRecipes() {
@@ -49,6 +52,7 @@ public class RecipeService {
 
 			for (int i = 0; i < jsonRecipes.size(); i++) {
 				JsonNode jsonRecipe = jsonRecipes.get(i);
+				imageService.saveImages(jsonRecipe);
 				saveRecipe(jsonRecipe);
 			}
 

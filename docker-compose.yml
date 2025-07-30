@@ -17,6 +17,8 @@ services:
     networks:
       - default
       - proxy
+    volumes:
+      - ${DATA_IMAGES}:/app/images
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mariadb://db:3306/kptn_cook_db
       - SPRING_DATASOURCE_USERNAME=kptn_cook_db
