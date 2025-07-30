@@ -1,0 +1,38 @@
+networks:
+  proxy:
+    external: true
+
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${TRAEFIK_NAME}.rule=${TRAEFIK_RULE}
+      - traefik.http.routers.${TRAEFIK_NAME}.entrypoints=websecure
+      - traefik.http.routers.${TRAEFIK_NAME}.tls=true
+      - traefik.http.routers.${TRAEFIK_NAME}.tls.certresolver=${TRAEFIK_CERT_RESOLVER}
+      - traefik.http.services.${TRAEFIK_NAME}.loadbalancer.server.port=8080
+      - traefik.docker.network=proxy
+    networks:
+      - default
+      - proxy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://db:3306/kptn_cook_db
+      - SPRING_DATASOURCE_USERNAME=kptn_cook_db
+      - SPRING_DATASOURCE_PASSWORD=kptn_cook_db
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:latest
+    restart: unless-stopped
+    networks:
+      - default
+    volumes:
+      - ${DATA_DB}:/var/lib/mysql
+    environment:
+      - MARIADB_RANDOM_ROOT_PASSWORD=true
+      - MARIADB_USER=kptn_cook_db
+      - MARIADB_PASSWORD=kptn_cook_db
+      - MARIADB_DATABASE=kptn_cook_db
